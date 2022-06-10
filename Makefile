@@ -1,12 +1,12 @@
-FW_URL		:= https://github.com/raspberrypi/firmware/branches/stable/boot
+FW_URL		:= https://github.com/raspberrypi/firmware/branches/master/boot
 
 EFI_BUILD	:= RELEASE
 EFI_ARCH	:= AARCH64
 EFI_TOOLCHAIN	:= GCC5
 EFI_TIMEOUT	:= 3
 EFI_FLAGS	:= --pcd=PcdPlatformBootTimeOut=$(EFI_TIMEOUT)
-EFI_DSC		:= edk2-platforms/Platform/RaspberryPi/RPi3/RPi3.dsc
-EFI_FD		:= Build/RPi3/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
+EFI_DSC		:= edk2-platforms/Platform/RaspberryPi/RPi4/RPi4.dsc
+EFI_FD		:= Build/RPi4/$(EFI_BUILD)_$(EFI_TOOLCHAIN)/FV/RPI_EFI.fd
 
 IPXE_CROSS	:= aarch64-linux-gnu-
 IPXE_SRC	:= ipxe/src
@@ -15,6 +15,7 @@ IPXE_EFI	:= $(IPXE_SRC)/$(IPXE_TGT)
 
 SDCARD_MB	:= 32
 export MTOOLSRC	:= mtoolsrc
+export PYTHON_COMMAND := python3
 
 SHELL		:= /bin/bash
 
@@ -43,7 +44,7 @@ $(EFI_FD) : submodules efi-basetools
 ipxe : $(IPXE_EFI)
 
 $(IPXE_EFI) : submodules
-	$(MAKE) -C $(IPXE_SRC) CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
+	$(MAKE) -C $(IPXE_SRC) NO_WERROR=1 CROSS=$(IPXE_CROSS) CONFIG=rpi $(IPXE_TGT)
 
 sdcard : firmware efi ipxe
 	$(RM) -rf sdcard
